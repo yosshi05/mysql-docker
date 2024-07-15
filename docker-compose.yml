@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  mysql_server:
+    image: mysql:9.0.0
+    container_name: mysql_server
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASS}
+      MYSQL_DATABASE: ${DB_NAME}
+      TZ: "Asia/Tokyo"
+    volumes:
+      - ./my.cnf:/etc/mysql/conf.d/my.cnf
+      - ./init:/docker-entrypoint-initdb.d
+    ports:
+      - ${DB_PORT}:3306
+
+  mysql_client:
+    container_name: mysql_client
+    image: mintel/k8s-mysqlclient
+    tty: true
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - ${ADMINER_PORT}:8080
